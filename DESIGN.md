@@ -16,5 +16,44 @@ change is listed under "Changes" with its date and reason.
   survivorship bias (stocks removed from the index before today are missing), which will be stated
   in every result.
 
+## Data cleaning (added 14 Oct 2026, after the Phase 1 quality checks, before any feature or label code)
+- All analysis uses `alpha.data.clean` on the frozen snapshot: placeholder pre-listing history and
+  zero-volume days dropped, broken adjustments repaired (rules in the docstring; actions logged in
+  `reports/phase1_data.md`). These fixes came from data-quality checks, not from any return-based result.
+
+## Timing, label and features (recorded 14 Oct 2026, before any feature, label or model code)
+- **Timing:** features for date t use only data up to and including the close of t. Trading is
+  assumed at the close of t+1 (one day for computing and acting), never at the close of t.
+- **Label horizon h = 5 trading days.** Raw label: log return from close t+1 to close t+1+5, minus
+  that day's cross-sectional mean (kept for R² and portfolio evaluation). **Training label:** its
+  cross-sectional rank, scaled to [-0.5, 0.5]. h = 1 and h = 21 are robustness checks only (Phase 6).
+- **Eligible stocks on date t:** price at t, at least 240 valid daily returns in the past 252 days,
+  unadjusted close of at least $5.
+- **Features** (all computed from cleaned adjusted closes, unadjusted closes and volume; SPY is the market):
+  | Name | Definition | Family |
+  |---|---|---|
+  | mom_12_1 | log return t-252 to t-21 | momentum |
+  | mom_6_1 | log return t-126 to t-21 | momentum |
+  | rev_1m | log return t-21 to t | reversal |
+  | rev_1w | log return t-5 to t | reversal |
+  | high_52w | log(price / max price over the past 252 days) | momentum |
+  | vol_1m | std of daily log returns, 21 days | volatility |
+  | vol_3m | std of daily log returns, 63 days | volatility |
+  | beta_1y | beta of daily returns on SPY, 252 days (min 126) | beta |
+  | idio_vol_3m | std of residuals from beta_1y, 63 days | volatility |
+  | volume_trend | log(mean dollar volume 5 days / mean dollar volume 63 days) | volume |
+  | amihud_1m | log mean of abs(return) / dollar volume, 21 days | illiquidity |
+  | size_proxy | log median dollar volume, 252 days | size |
+- **Size:** free point-in-time shares outstanding are not available, so size is proxied by dollar
+  volume (strongly correlated with market cap in large caps). Stated as a limitation.
+- **Normalisation:** per date, each feature is ranked across eligible stocks and scaled to
+  [-0.5, 0.5]; a missing value after ranking is set to 0 (the median). No information crosses dates.
+- **No feature selection on returns:** all 12 features go into every model; univariate results are
+  reported but are not used to drop or add features.
+- **Leakage tests (must pass before Phase 3):** recomputing features and labels on data truncated after
+  date t (or with all prices after t perturbed) leaves every feature at t unchanged; the label at t
+  depends only on closes t+1 and t+1+h; a deliberately leaky feature is caught by the same test.
+
 ## Changes after this date
-(none)
+- 14 Oct 2026: added the data-cleaning section after Phase 1 found placeholder histories and one
+  broken adjustment in the raw data (decided from quality checks only, no returns examined).
