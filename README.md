@@ -21,12 +21,36 @@ and a hold-out period locked until one final run. Work in progress; see [DESIGN.
 Evidence: [reports/phase1_data.md](reports/phase1_data.md) (every cleaning action, every large move, liquidity),
 [figures/phase1_coverage.png](figures/phase1_coverage.png).
 
+## Split design
+
+![Walk-forward splits](figures/phase3_splits.png)
+
+```
+ one fold (test year Y), on the trading calendar:
+
+ 2013-01-02 ............................................ | 11 days | Y-01-02 ........ Y-12-31
+ [ inner training ] [5+5 gap] [ inner validation, 12 m ] [ purge  ] [ test year (out of sample) ]
+ \________________ training window: final refit on all of it ___/  [+embargo]
+```
+
+- **Expanding window, yearly test blocks:** 8 development folds (test years 2015–2022), then 4 hold-out
+  folds (2023 to Sep 2026) run once at the end, with the identical, frozen procedure.
+- **Purge + embargo:** the label covers 5 days, so a training date is kept only if its label ends at least
+  5 more trading days (the embargo) before the test year starts: 11 trading days separate the last
+  training date from the first test date. The same gap separates inner training from inner validation.
+- **Tuning:** hyperparameters are picked on the last 12 months of each training window, then the model is
+  refitted on the whole window. Test years never inform any choice.
+- **Hold-out stays clean:** development test labels end by 2022-12-30 (the last 6 trading days of 2022 are
+  not tested), so no development result uses a 2023 price.
+- Fold-by-fold dates and sample counts: [reports/phase3_splits.md](reports/phase3_splits.md).
+
 ## Results
 
 | Phase | Result |
 |---|---|
 | [1. Data and universe](reports/phase1_data.md) | Snapshot frozen; three data faults found and fixed with a logged cleaning step (stale flags 329 → 0); biases stated. |
 | [2. Features and label](reports/phase2_features.md) | 12 pre-registered features (momentum, reversal, 52-week high, volatility, beta, idiosyncratic volatility, volume trend, illiquidity, size proxy), rank-normalised per date; label = 5-day excess return from close t+1, trained as its rank. 1.63M eligible stock-days. Leakage tests pass: features unchanged when the future is removed (unit tests and three real dates), label depends only on closes t+1 and t+6, a planted look-ahead feature is caught. |
+| [3. Split design](reports/phase3_splits.md) | 8 development + 4 hold-out walk-forward folds with purge and a 5-day embargo, checked on the real calendar and by unit tests (tight purge, disjoint test years, gap scales with the horizon). Development labels never touch 2023 prices. |
 
 ## Reproducibility
 
@@ -35,6 +59,7 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/p
 .venv/bin/python -m pytest
 .venv/bin/python scripts/run_phase1.py
 .venv/bin/python scripts/run_phase2.py   # also writes data/processed/features_h5.parquet
+.venv/bin/python scripts/run_phase3.py
 ```
 
 Dependencies pinned in `requirements.txt` (Python 3.13).

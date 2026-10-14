@@ -68,6 +68,9 @@ change is listed under "Changes" with its date and reason.
   hyperparameters.
 - **Hold-out:** the identical procedure, frozen after Phase 6, runs once on 2023, 2024, 2025 and
   2026 (to 30 Sep, the last label ending by then) as yearly blocks, each trained on all earlier data.
+- **No label crosses into the hold-out:** a development test date is used only if its whole label
+  window ends by 2022-12-31 (the last 6 trading days of 2022 are not tested); hold-out test dates
+  need their label window to end by 2026-09-30.
 - Every training date is used (daily, overlapping labels); IC and portfolio statistics are computed per
   test date. Standard errors in Phase 5 account for the 5-day label overlap.
 
