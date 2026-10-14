@@ -26,6 +26,7 @@ Evidence: [reports/phase1_data.md](reports/phase1_data.md) (every cleaning actio
 | Phase | Result |
 |---|---|
 | [1. Data and universe](reports/phase1_data.md) | Snapshot frozen; three data faults found and fixed with a logged cleaning step (stale flags 329 → 0); biases stated. |
+| [2. Features and label](reports/phase2_features.md) | 12 pre-registered features (momentum, reversal, 52-week high, volatility, beta, idiosyncratic volatility, volume trend, illiquidity, size proxy), rank-normalised per date; label = 5-day excess return from close t+1, trained as its rank. 1.63M eligible stock-days. Leakage tests pass: features unchanged when the future is removed (unit tests and three real dates), label depends only on closes t+1 and t+6, a planted look-ahead feature is caught. |
 
 ## Reproducibility
 
@@ -33,6 +34,7 @@ Evidence: [reports/phase1_data.md](reports/phase1_data.md) (every cleaning actio
 python -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/pip install -e .
 .venv/bin/python -m pytest
 .venv/bin/python scripts/run_phase1.py
+.venv/bin/python scripts/run_phase2.py   # also writes data/processed/features_h5.parquet
 ```
 
 Dependencies pinned in `requirements.txt` (Python 3.13).
