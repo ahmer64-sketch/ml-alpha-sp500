@@ -54,6 +54,23 @@ change is listed under "Changes" with its date and reason.
   date t (or with all prices after t perturbed) leaves every feature at t unchanged; the label at t
   depends only on closes t+1 and t+1+h; a deliberately leaky feature is caught by the same test.
 
+## Splits (recorded 14 Oct 2026, before any model code or model result)
+- **Walk-forward, expanding window, yearly test blocks.** Development folds test on each calendar year
+  2015 to 2022 (8 blocks); each trains on every eligible date from 2013-01-01 up to the gap before its
+  test year. Models are retrained once a year and never see a date from their own test block.
+- **Purge and embargo (h = 5):** a training date t is used only if its label window ends at least 5
+  trading days (the embargo, equal to the horizon) before the first test date: index(t) + 1 + h + 5 <
+  index(first test date). So 11 trading days separate the last training date from the test block.
+  Features need no purge: they use only past data, which the leakage tests guarantee.
+- **Hyperparameters:** chosen inside each training window, on an inner validation block = its last
+  12 months, separated from the inner training part by the same purge and embargo. The model is then
+  refitted on the whole (purged) training window with the chosen setting. Test blocks never inform
+  hyperparameters.
+- **Hold-out:** the identical procedure, frozen after Phase 6, runs once on 2023, 2024, 2025 and
+  2026 (to 30 Sep, the last label ending by then) as yearly blocks, each trained on all earlier data.
+- Every training date is used (daily, overlapping labels); IC and portfolio statistics are computed per
+  test date. Standard errors in Phase 5 account for the 5-day label overlap.
+
 ## Changes after this date
 - 14 Oct 2026: added the data-cleaning section after Phase 1 found placeholder histories and one
   broken adjustment in the raw data (decided from quality checks only, no returns examined).
