@@ -110,4 +110,7 @@ for i, r in avg.iterrows():
 sd = pred[MODELS].groupby(level="date").std().median()
 out("\nMedian cross-sectional spread (sd) of predictions per date: " + ", ".join(f"{m} {sd[m]:.4f}" for m in MODELS)
     + ". None is constant (a lasso that shrinks every weight to zero would show 0 here).")
+out("\n![Phase 4 models](../figures/phase4_models.png)\n")
+out("Figure: `scripts/make_phase4_figure.py` (tuning results per fold, prediction spread, agreement between models; "
+    "no test labels used).")
 (ROOT / "reports/phase4_models.md").write_text("\n".join(lines) + "\n")

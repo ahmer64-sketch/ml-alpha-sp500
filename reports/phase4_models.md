@@ -64,3 +64,7 @@ Average daily rank correlation between the models' predictions:
 | reversal | +0.33 | +0.32 | +0.31 | +0.00 | +1.00 |
 
 Median cross-sectional spread (sd) of predictions per date: ridge 0.0046, lasso 0.0095, gbt 0.0139. None is constant (a lasso that shrinks every weight to zero would show 0 here).
+
+![Phase 4 models](../figures/phase4_models.png)
+
+Figure: `scripts/make_phase4_figure.py` (tuning results per fold, prediction spread, agreement between models; no test labels used).

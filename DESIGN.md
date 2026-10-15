@@ -116,3 +116,6 @@ Development test years 2015-2022 only; the hold-out uses the identical code once
 ## Changes after this date
 - 14 Oct 2026: added the data-cleaning section after Phase 1 found placeholder histories and one
   broken adjustment in the raw data (decided from quality checks only, no returns examined).
+- 15 Oct 2026: after seeing the Phase 5 betas (+0.5 for the model books), added a **diagnostic**
+  SPY-hedged version (ex-ante beta from beta_1y, known at t) and net returns by year. These are extra
+  rows; no pre-registered number was changed or dropped. The hold-out will report both.
