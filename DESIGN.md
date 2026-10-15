@@ -74,6 +74,24 @@ change is listed under "Changes" with its date and reason.
 - Every training date is used (daily, overlapping labels); IC and portfolio statistics are computed per
   test date. Standard errors in Phase 5 account for the 5-day label overlap.
 
+## Models (recorded 14 Oct 2026, before any model code or model result)
+- **Input:** the 12 rank-normalised features; **target:** the rank label (y_rank). One pooled model
+  across all stocks and dates in the training window (no per-stock or per-sector models).
+- **Candidates and grids** (every grid point x fold is logged to `reports/trials.csv`):
+  | Model | Grid (chosen per fold by inner-validation IC) |
+  |---|---|
+  | ridge | alpha in {1, 1e3, 1e5, 1e6} |
+  | lasso | alpha in {1e-6, 1e-5, 1e-4, 1e-3} |
+  | gbt (sklearn HistGradientBoostingRegressor; LightGBM-equivalent, no libomp dependency) | learning_rate 0.05, 300 trees, l2 1.0, max_leaf_nodes in {7, 31} x min_samples_leaf in {200, 2000}, no early stopping, random_state 0 |
+- **Tuning metric:** mean daily rank IC (Spearman correlation of prediction and label across stocks,
+  per date) on the inner validation block.
+- **Baselines (no fitting):** momentum = mom_12_1, reversal = -rev_1m, both as ranks.
+- **Primary model, fixed now:** gbt. Ridge is the linear benchmark; lasso and baselines are reported.
+  All are run on the hold-out and all are reported; the headline is gbt regardless of which looks best
+  in development.
+- **Output:** out-of-sample predictions for every development test date and every model, saved with the
+  fold, the chosen hyperparameters and the training window.
+
 ## Changes after this date
 - 14 Oct 2026: added the data-cleaning section after Phase 1 found placeholder histories and one
   broken adjustment in the raw data (decided from quality checks only, no returns examined).
