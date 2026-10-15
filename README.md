@@ -51,6 +51,7 @@ Evidence: [reports/phase1_data.md](reports/phase1_data.md) (every cleaning actio
 | [1. Data and universe](reports/phase1_data.md) | Snapshot frozen; three data faults found and fixed with a logged cleaning step (stale flags 329 → 0); biases stated. |
 | [2. Features and label](reports/phase2_features.md) | 12 pre-registered features (momentum, reversal, 52-week high, volatility, beta, idiosyncratic volatility, volume trend, illiquidity, size proxy), rank-normalised per date; label = 5-day excess return from close t+1, trained as its rank. 1.63M eligible stock-days. Leakage tests pass: features unchanged when the future is removed (unit tests and three real dates), label depends only on closes t+1 and t+6, a planted look-ahead feature is caught. |
 | [3. Split design](reports/phase3_splits.md) | 8 development + 4 hold-out walk-forward folds with purge and a 5-day embargo, checked on the real calendar and by unit tests (tight purge, disjoint test years, gap scales with the horizon). Development labels never touch 2023 prices. |
+| [4. Models](reports/phase4_models.md) | Ridge, lasso and gradient-boosted trees (primary, fixed in advance) tuned per fold on inner validation; out-of-sample predictions saved for all 939,365 test stock-days 2015–2022 (`predictions/dev_predictions.parquet`), with no gaps. 96 tuning fits logged in `reports/trials.csv`. Validation ICs are small (0.00–0.04), as expected for weekly stock returns. |
 
 ## Reproducibility
 
@@ -60,6 +61,7 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/p
 .venv/bin/python scripts/run_phase1.py
 .venv/bin/python scripts/run_phase2.py   # also writes data/processed/features_h5.parquet
 .venv/bin/python scripts/run_phase3.py
+.venv/bin/python scripts/run_phase4.py   # ~5 min
 ```
 
 Dependencies pinned in `requirements.txt` (Python 3.13).
