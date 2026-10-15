@@ -144,3 +144,6 @@ All on the development period. Pass/fail rules are fixed here; every result is r
 - 15 Oct 2026: after Phase 6, an interpretation section was added to its report, and the hold-out report
   will also show the members-since-2012 split (Phase 6 check 3, reused). No pass/fail rule changed; two
   placebo runs failed and are reported as failures.
+- 15 Oct 2026: after the first hold-out run (2026-10-15 08:07 UTC), an interpretation section splitting
+  the hold-out by the date each stock joined the index was added to its report. The script was rerun
+  only to reproduce the same predictions; no pre-registered number changed.
