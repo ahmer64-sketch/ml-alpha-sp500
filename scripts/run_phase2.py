@@ -35,6 +35,7 @@ z = F.normalise(f, eligible)
 y_raw, y_rank = F.label(p, eligible, 5)
 panel_long = F.build(df)
 secs = time.perf_counter() - t0
+(ROOT / "data/processed").mkdir(parents=True, exist_ok=True)      # not in git; absent in a fresh clone
 panel_long.to_parquet(ROOT / "data/processed/features_h5.parquet")
 
 out("# Phase 2: features and label\n")
