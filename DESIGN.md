@@ -141,3 +141,6 @@ All on the development period. Pass/fail rules are fixed here; every result is r
 - 15 Oct 2026: after seeing the Phase 5 betas (+0.5 for the model books), added a **diagnostic**
   SPY-hedged version (ex-ante beta from beta_1y, known at t) and net returns by year. These are extra
   rows; no pre-registered number was changed or dropped. The hold-out will report both.
+- 15 Oct 2026: after Phase 6, an interpretation section was added to its report, and the hold-out report
+  will also show the members-since-2012 split (Phase 6 check 3, reused). No pass/fail rule changed; two
+  placebo runs failed and are reported as failures.

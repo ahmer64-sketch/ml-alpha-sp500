@@ -53,6 +53,7 @@ Evidence: [reports/phase1_data.md](reports/phase1_data.md) (every cleaning actio
 | [3. Split design](reports/phase3_splits.md) | 8 development + 4 hold-out walk-forward folds with purge and a 5-day embargo, checked on the real calendar and by unit tests (tight purge, disjoint test years, gap scales with the horizon). Development labels never touch 2023 prices. |
 | [4. Models](reports/phase4_models.md) | Ridge, lasso and gradient-boosted trees (primary, fixed in advance) tuned per fold on inner validation; out-of-sample predictions saved for all 939,365 test stock-days 2015–2022 (`predictions/dev_predictions.parquet`), with no gaps. 96 tuning fits logged in `reports/trials.csv`. Validation ICs are small (0.00–0.04), as expected for weekly stock returns. [Figure](figures/phase4_models.png). |
 | [5. Evaluation](reports/phase5_evaluation.md) | Development test years 2015–2022, net of costs. Primary gbt: IC +0.013 (t = 2.29, not significant after Bonferroni for 5 signals), deciles rise steadily, OOS R² slightly negative. Top-minus-bottom decile book: net Sharpe +0.21, +0.11 after hedging its market beta (+0.5); all 95% intervals include 0; gains come mostly from 2017 and 2020. No better than plain 1-month reversal. **No evidence of a tradable edge after costs in development.** |
+| [6. Robustness](reports/phase6_robustness.md) | Reproducibility and whole-pipeline future perturbation **pass**. Placebo: **2 of 6 shuffled-label runs fail** (both negative, so not leakage): noise-fitted models reach ICs as large as the real one, so Phase 5's t-statistics understate uncertainty. Most important features: size/liquidity, then reversal. **On stocks in the index since 2012 the IC is +0.003 (t 0.5); the signal sits in later joiners (+0.019)**, i.e. in the membership look-ahead. No variant (horizons 1/21, fixed hyperparameters, costs, breadth, universe) has a net Sharpe interval above 0. [Figure](figures/phase6_robustness.png). |
 
 ## Reproducibility
 
@@ -65,6 +66,7 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/p
 .venv/bin/python scripts/run_phase4.py   # ~5 min
 .venv/bin/python scripts/make_phase4_figure.py
 .venv/bin/python scripts/run_phase5.py
+.venv/bin/python scripts/run_phase6.py   # ~15 min, caches in data/processed/phase6/
 ```
 
 Dependencies pinned in `requirements.txt` (Python 3.13).

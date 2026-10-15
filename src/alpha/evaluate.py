@@ -80,3 +80,33 @@ def perf(x, ppy=PERIODS_PER_YEAR):
     cum = x.cumsum()
     return {"ann_return": x.mean() * ppy, "ann_vol": x.std() * np.sqrt(ppy), "sharpe": sr,
             "sharpe_lo": sr - 1.96 * se, "sharpe_hi": sr + 1.96 * se, "max_dd": float((cum - cum.cummax()).min())}
+
+
+def forward_returns(adj, start_lag, horizon, last_end, log=False):
+    """Return from close t+1+start_lag to close t+1+start_lag+horizon (wide, indexed by t).
+
+    NaN when that window ends after `last_end`, so development results never use later prices.
+    """
+    cal = adj.index
+    a, b = adj.shift(-(1 + start_lag)), adj.shift(-(1 + start_lag + horizon))
+    r = np.log(b / a) if log else b / a - 1
+    end = pd.Series(cal, cal).shift(-(1 + start_lag + horizon))
+    ok = (end <= pd.Timestamp(last_end)).to_numpy()
+    return r.where(np.broadcast_to(ok[:, None], r.shape))
+
+
+def staggered(pred, fwd, cost, dates, h, beta, spy_fwd, frac=0.1, cost_mult=1.0):
+    """Run h books started on consecutive days; return (summary dict averaged over books, all rows)."""
+    rows, stats = [], []
+    for k in range(h):
+        r = long_short(pred, fwd, cost * cost_mult, dates[k::h], frac=frac, h=h, beta=beta)
+        r["hedged"] = r["net"] - r["beta_ex"] * spy_fwd.reindex(r.index).fillna(0.0)
+        r["offset"] = k
+        rows.append(r)
+        ppy = 252 / h
+        n, hd, g = perf(r["net"], ppy), perf(r["hedged"], ppy), perf(r["gross"], ppy)
+        stats.append({"gross_sharpe": g["sharpe"], "net_sharpe": n["sharpe"], "net_lo": n["sharpe_lo"],
+                      "net_hi": n["sharpe_hi"], "net_ret": n["ann_return"], "hedged_sharpe": hd["sharpe"],
+                      "hedged_lo": hd["sharpe_lo"], "hedged_hi": hd["sharpe_hi"],
+                      "turnover": r["turnover"].iloc[1:].mean()})
+    return pd.DataFrame(stats).mean().to_dict(), pd.concat(rows)

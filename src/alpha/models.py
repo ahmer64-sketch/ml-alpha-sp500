@@ -1,4 +1,5 @@
 """Models, grids and the walk-forward fit/predict loop, as pre-registered in DESIGN.md."""
+import ast
 import itertools
 import time
 
@@ -61,9 +62,23 @@ def run_fold(panel, split, name, log=None):
                         "fit_seconds": round(time.perf_counter() - t0, 1)})
         if ic.mean() > best_ic:
             best, best_ic = params, ic.mean()
-    m = make(name, best).fit(train[FEATURES].to_numpy(), train["y_rank"].to_numpy())
+    _, pred = fit_predict(panel, split, name, best)
+    return pred, best
+
+
+def fit_predict(panel, split, name, params, target="y_rank"):
+    """Fit with fixed `params` on the whole (purged) training window; return (model, test predictions)."""
+    train, test = _rows(panel, split.train), _rows(panel, split.test, labelled=False)
+    train = train[train[target].notna()]
+    m = make(name, params).fit(train[FEATURES].to_numpy(), train[target].to_numpy())
     assert train.index.get_level_values("date").max() < split.test[0]
-    return pd.Series(m.predict(test[FEATURES].to_numpy()), test.index, name=name), best
+    return m, pd.Series(m.predict(test[FEATURES].to_numpy()), test.index, name=name)
+
+
+def chosen_params(trials):
+    """{(fold, model): params} picked by the tuning log (highest inner-validation IC), as in run_fold."""
+    best = trials.loc[trials.groupby(["fold", "model"], sort=False)["val_ic_mean"].idxmax()]
+    return {(str(r["fold"]), r["model"]): ast.literal_eval(r["params"]) for _, r in best.iterrows()}
 
 
 def baseline(panel, split, name):
