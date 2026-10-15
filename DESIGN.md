@@ -113,6 +113,28 @@ Development test years 2015-2022 only; the hold-out uses the identical code once
   (Lo 2002 standard error), maximum drawdown, turnover per rebalance, beta to SPY.
 - **Signal decay:** IC of each prediction against 5-day returns starting 0, 5, 10 and 20 days later.
 
+## Robustness checks (recorded 15 Oct 2026, before running any of them)
+All on the development period. Pass/fail rules are fixed here; every result is reported, including failures.
+1. **Placebo (shuffled labels):** in every training window the rank label is shuffled across stocks
+   within each date; gbt and ridge are refitted with the hyperparameters Phase 4 chose for that fold and
+   scored on the real test labels. 3 seeds. **Pass:** each run's mean test IC is within 2 Newey-West
+   standard errors of 0.
+2. **Future perturbation (whole pipeline):** prices of every stock after T = 2018-06-29 are multiplied by
+   random noise; features, labels and the 2018 fold (tuning included) are recomputed. **Pass:** predictions
+   for test dates up to T are identical to the unperturbed run (max difference < 1e-9), and predictions
+   after T change (the check is sensitive).
+3. **Sensitivity** (no pass/fail; reported in full):
+   - label horizon h = 1 and h = 21 (embargo = h, rebalance every h days, staggered books), gbt and ridge;
+   - each hyperparameter setting held fixed for all folds (no tuning), gbt and ridge;
+   - costs x0, x0.5, x1, x2; portfolio of top/bottom 10% vs 20%;
+   - universe restricted to stocks in the index since 2012 or earlier (less membership look-ahead).
+4. **Importance:** for gbt (Phase 4 settings per fold), the drop in test IC when one feature family is
+   shuffled across stocks within each date: momentum (mom_12_1, mom_6_1, high_52w), reversal (rev_1m,
+   rev_1w), volatility (vol_1m, vol_3m, idio_vol_3m), beta (beta_1y), volume (volume_trend), size and
+   liquidity (size_proxy, amihud_1m). Ridge coefficients per fold are also reported.
+5. **Freeze:** after Phase 6 the pipeline is frozen at its commit; the hold-out uses the pre-registered
+   settings (h = 5, Phase 4 grids and tuning, Phase 5 portfolio and costs), whatever the sensitivity runs show.
+
 ## Changes after this date
 - 14 Oct 2026: added the data-cleaning section after Phase 1 found placeholder histories and one
   broken adjustment in the raw data (decided from quality checks only, no returns examined).
