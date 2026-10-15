@@ -92,6 +92,27 @@ change is listed under "Changes" with its date and reason.
 - **Output:** out-of-sample predictions for every development test date and every model, saved with the
   fold, the chosen hyperparameters and the training window.
 
+## Evaluation (recorded 15 Oct 2026, before any test-year metric was computed)
+Development test years 2015-2022 only; the hold-out uses the identical code once, after Phase 6.
+- **Signals scored:** ridge, lasso, gbt (primary), momentum and reversal baselines (5 in total).
+- **IC:** daily Spearman correlation of prediction and 5-day label across stocks. Reported: mean,
+  t-stat with Newey-West standard errors (5 lags, for the overlapping labels), IC-IR = mean / sd
+  of daily IC, and the share of years with a positive mean. Significance: Bonferroni over the 5 signals.
+- **Out-of-sample R²** of the rank label against a zero forecast: 1 - sum((y - pred)²) / sum(y²),
+  for the three fitted models (the baselines are not on the label's scale).
+- **Deciles:** mean 5-day excess return per prediction decile, and top-minus-bottom spread.
+- **Portfolio:** every 5th trading day the signal of date t is traded at the close of t+1: long the
+  top decile, short the bottom decile, equal weights, $1 long and $1 short. Held for 5 days (simple
+  returns, close t+1 to close t+6). Five versions starting on consecutive days are run and averaged
+  (equivalent to a staggered book), so results do not depend on the start day. Weight drift within a
+  week is ignored when computing turnover.
+- **Costs:** one-way cost per stock = 3 bps + 30 bps / sqrt(ADV in $m), capped at 50 bps, where ADV is
+  the 63-day median dollar volume known at t (about 5.5 bps at the median stock, 16 bps at $5m a day).
+  Cost = sum over stocks of |weight change| x cost. Short borrow fee 0.5% a year on the short book.
+- **Reported per portfolio:** annual return and volatility, Sharpe (gross and net) with a 95% interval
+  (Lo 2002 standard error), maximum drawdown, turnover per rebalance, beta to SPY.
+- **Signal decay:** IC of each prediction against 5-day returns starting 0, 5, 10 and 20 days later.
+
 ## Changes after this date
 - 14 Oct 2026: added the data-cleaning section after Phase 1 found placeholder histories and one
   broken adjustment in the raw data (decided from quality checks only, no returns examined).
