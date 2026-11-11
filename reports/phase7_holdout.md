@@ -1,6 +1,6 @@
 # Phase 7: hold-out (2023 - Sep 2026), single run of the frozen pipeline
 
-Pipeline frozen at commit `1b30cb4` after Phase 6 (the script checks that `src/alpha/` is identical). First run: 2026-10-15T08:07:33+00:00 UTC; this run: 2026-10-15T08:11:36+00:00 UTC. Same models, tuning, portfolio and costs as pre-registered; nothing was changed after seeing these numbers.
+Pipeline frozen at commit `e794eeb` (`1b30cb4` before the 2026-11-10 history rewrite that removed third-party data) after Phase 6 (the script checks that `src/alpha/` is identical). First run: 2026-10-15T08:07:33+00:00 UTC; this run: 2026-10-15T08:11:36+00:00 UTC. Same models, tuning, portfolio and costs as pre-registered; nothing was changed after seeing these numbers.
 
 933 test dates (2023-01-03 to 2026-09-22), 461,435 stock-days, 4 yearly folds (each trained on all earlier data).
 

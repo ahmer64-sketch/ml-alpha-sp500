@@ -1,5 +1,7 @@
 {
   "first_run_utc": "2026-10-15T08:07:33+00:00",
-  "frozen_commit": "1b30cb4",
-  "last_run_utc": "2026-10-15T08:11:36+00:00"
+  "frozen_commit": "e794eeb",
+  "last_run_utc": "2026-10-15T08:11:36+00:00",
+  "frozen_commit_before_history_rewrite": "1b30cb4",
+  "history_note": "Git history was rewritten on 2026-11-10 to remove redistributed Yahoo Finance data; every commit kept its message, date and code, so commit IDs changed 1:1; the src/alpha tree is unchanged."
 }

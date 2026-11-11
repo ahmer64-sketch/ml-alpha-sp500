@@ -21,7 +21,7 @@ from alpha import data, evaluate as E, features as F, models as M
 from alpha.splits import walk_forward
 
 ROOT = Path(__file__).resolve().parents[1]
-FROZEN = "1b30cb4"
+FROZEN = "e794eeb"   # was 1b30cb4 before the 2026-11-10 history rewrite that removed third-party data; src/alpha tree unchanged
 SIGNALS = ["gbt", "ridge", "lasso", "momentum", "reversal"]
 FITTED = ["gbt", "ridge", "lasso"]
 H = 5

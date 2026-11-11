@@ -1,4 +1,4 @@
-# One command reproduces every report and figure from the committed data snapshot (no network):
+# One command reproduces every report and figure from the data snapshot in data/raw (no network; `make fetch` downloads one):
 #     make all        (~35 min: Phase 4 ~5, Phase 6 ~15, hold-out ~10)
 # Downloading a fresh snapshot is separate:  make fetch
 
